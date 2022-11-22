@@ -50,40 +50,67 @@
 using namespace pdal;
 
 
-TEST(StacReaderTest, remote_item_test)
-{
-    Options options;
+// TEST(StacReaderTest, remote_item_test)
+// {
+//     Options options;
 
-    options.add("filename", "https://s3-us-west-2.amazonaws.com/usgs-lidar-stac/ept/MD_GoldenBeach_2012.json");
-    options.add("asset_name", "ept.json");
+//     options.add("filename", "https://s3-us-west-2.amazonaws.com/usgs-lidar-stac/ept/MD_GoldenBeach_2012.json");
+//     options.add("asset_name", "ept.json");
 
-    StageFactory f;
-    Stage& reader = *f.createStage("readers.stac");
-    reader.setOptions(options);
+//     StageFactory f;
+//     Stage& reader = *f.createStage("readers.stac");
+//     reader.setOptions(options);
 
-    QuickInfo qi = reader.preview();
+//     QuickInfo qi = reader.preview();
 
-    EXPECT_EQ(qi.m_pointCount, 4860658);
-}
+//     EXPECT_EQ(qi.m_pointCount, 4860658);
+// }
 
 
-TEST(StacReaderTest, catalog_test)
-{
-    Options options;
+// TEST(StacReaderTest, catalog_test)
+// {
+//     Options options;
 
-    options.add("filename", Support::datapath("stac/catalog.json"));
-    options.add("asset_name", "ept.json");
+//     options.add("filename", Support::datapath("stac/catalog.json"));
+//     options.add("asset_name", "ept.json");
 
-    StageFactory f;
-    Stage& reader = *f.createStage("readers.stac");
-    reader.setOptions(options);
+//     StageFactory f;
+//     Stage& reader = *f.createStage("readers.stac");
+//     reader.setOptions(options);
 
-    QuickInfo qi = reader.preview();
+//     QuickInfo qi = reader.preview();
 
-    EXPECT_EQ(qi.m_pointCount, 36174643520);
-}
+//     EXPECT_EQ(qi.m_pointCount, 36174643520);
+// }
 
-TEST(StacReaderTest, id_prune_test)
+// TEST(StacReaderTest, id_prune_test)
+// {
+//     Options options;
+
+//     options.add("filename", Support::datapath("stac/catalog.json"));
+//     options.add("ids", "MD_GoldenBeach_2012");
+//     //TODO find way to ignore regex commas?
+//     options.add("ids", "USGS_LPC\\w*");
+//     options.add("asset_name", "ept.json");
+
+//     StageFactory f;
+//     Stage& reader = *f.createStage("readers.stac");
+//     reader.setOptions(options);
+
+//     QuickInfo qi = reader.preview();
+
+
+//     NL::json jsonMetadata = NL::json::parse(Utils::toJSON(qi.m_metadata));
+//     EXPECT_TRUE(jsonMetadata.contains("stac_ids"));
+//     std::vector<std::string> idList = jsonMetadata["stac_ids"].get<std::vector<std::string>>();
+
+//     EXPECT_TRUE(std::find(idList.begin(), idList.end(), "MD_GoldenBeach_2012") != idList.end());
+//     EXPECT_TRUE(std::find(idList.begin(), idList.end(), "USGS_LPC_AK_Anchorage_2015_LAS_2017") != idList.end());
+//     EXPECT_TRUE(std::find(idList.begin(), idList.end(), "USGS_LPC_AK_FairbanksNSB_QL1_2017_LAS_2018") != idList.end());
+//     EXPECT_EQ(qi.m_pointCount, 36134211758);
+// }
+
+TEST(StacReaderTest, metadata_fetch)
 {
     Options options;
 
@@ -101,27 +128,8 @@ TEST(StacReaderTest, id_prune_test)
 
 
     NL::json jsonMetadata = NL::json::parse(Utils::toJSON(qi.m_metadata));
-    EXPECT_TRUE(jsonMetadata.contains("stac_ids"));
-    std::vector<std::string> idList = jsonMetadata["stac_ids"].get<std::vector<std::string>>();
 
-    EXPECT_TRUE(std::find(idList.begin(), idList.end(), "MD_GoldenBeach_2012") != idList.end());
-    EXPECT_TRUE(std::find(idList.begin(), idList.end(), "USGS_LPC_AK_Anchorage_2015_LAS_2017") != idList.end());
-    EXPECT_TRUE(std::find(idList.begin(), idList.end(), "USGS_LPC_AK_FairbanksNSB_QL1_2017_LAS_2018") != idList.end());
-    EXPECT_EQ(qi.m_pointCount, 36134211758);
+    std::cout << "Value Method: " << qi.m_metadata.value() << std::endl;
+    std::cout << "Json value Method: " << qi.m_metadata.jsonValue() << std::endl;
+    std::cout << "Using Utils::toJSON method and NL json parse: " << jsonMetadata.dump() << std::endl;
 }
-
-// TEST(StacReaderTest, date_prune_test)
-// {
-//     Options options;
-
-//     options.add("filename", Support::datapath("stac/MD_GoldenBeach_2012.json"));
-//     options.add("asset_name", "ept.json");
-//     options.add("date_ranges", "[\"\",\"\"]")
-
-//     StageFactory f;
-//     Stage& reader = *f.createStage("readers.stac");
-//     reader.setOptions(options);
-
-//     QuickInfo qi = reader.preview();
-
-// }
